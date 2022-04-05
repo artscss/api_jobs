@@ -24,7 +24,7 @@ class AuthController extends Controller
             "password_confirmation" => ["required", "same:password"],
         ]);
         if ($validator->fails()) {
-            return redirect("/register")
+            return redirect()->route("auth.register")
                         ->withErrors($validator)
                         ->withInput();
         }
@@ -61,5 +61,11 @@ class AuthController extends Controller
             return redirect("/dashboard");
         }
         return redirect("/login")->with("danger", "The data is wrong");
+    }
+    // logout
+    public function logout()
+    {
+        Auth::logout();
+        return redirect("/logout")->with("success", "successful logout");
     }
 }

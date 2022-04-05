@@ -24,3 +24,8 @@ Route::post("/requestregister", [AuthController::class, "requestregister"])->nam
 // login
 Route::get("/login", [AuthController::class, "login"])->name("auth.login");
 Route::post("/requestlogin", [AuthController::class, "requestlogin"])->name("auth.requestlogin");
+
+Route::middleware("auth")->group(function(){
+// logout
+Route::get("/logout", [AuthController::class, "logout"])->name("auth.logout");
+});

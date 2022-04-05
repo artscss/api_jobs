@@ -14,7 +14,7 @@ class AuthController extends Controller
     {
         return view("auth.register");
     }
-    // register
+    // requestregister
     public function requestregister(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -23,8 +23,10 @@ class AuthController extends Controller
             "password" => ["required", "min:5", "max:20"],
             "password_confirmation" => ["required", "same:password"],
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+        if ($validator->fails()) {
+            return redirect("/register")
+                        ->withErrors($validator)
+                        ->withInput();
         }
         $data = new User();
         $data->name = $request->name;
@@ -32,6 +34,32 @@ class AuthController extends Controller
         $data->password = bcrypt($request->password);
         $data->save();
         Auth::login($data);
-        return redirect("/dashboard");
+        return redirect("/dashboard")->with("success", "new account create");
+    }
+    // login
+    public function login()
+    {
+        return view("auth.login");
+    }
+    // requestlogin
+    public function requestlogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "email" => ["required", "email"],
+            "password" => ["required", "min:5", "max:20"],
+        ]);
+        if ($validator->fails()) {
+            return redirect("/login")
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+        $data = [
+            "email" => $request->email,
+            "password" => $request->password,
+        ];
+        if(Auth::attempt($data)){
+            return redirect("/dashboard");
+        }
+        return redirect("/login")->with("danger", "The data is wrong");
     }
 }

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -27,6 +29,25 @@ class AuthController extends Controller
         $data->email = $request->email;
         $data->password = bcrypt($request->password);
         $data->save();
+        $token = $data->createToken("token_name")->plainTextToken;
+        return response()->json(["data" => $data, "token" => $token, "status" => 200], 200);
+    }
+    // login
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "email" => ["required", "email"],
+            "password" => ["required", "min:5", "max:20"],
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+        $data = User::where("email", $request->email)->first();
+        if (!$data || !Hash::check($request->password, $data->password)) {
+            throw ValidationException::withMessages([
+                "email" => ["The provided credentials are incorrect."],
+            ]);
+        }
         $token = $data->createToken("token_name")->plainTextToken;
         return response()->json(["data" => $data, "token" => $token, "status" => 200], 200);
     }

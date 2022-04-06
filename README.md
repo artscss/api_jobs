@@ -16,7 +16,7 @@ simple project for apply Job
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
 | `name` | `string` | **Required** |
-| `email` | `string` | **Required** |
+| `email` | `string` | **Required** | ** unique **
 | `password` | `string` | **Required** |
 | `password_confirmation` | `string` | **Required** |
 
@@ -63,7 +63,7 @@ simple project for apply Job
 #### apply job
 
 ```http
-  get /api//apply/{job_id}
+  get /api/apply/{job_id}
 ```
 
 #### send details apply

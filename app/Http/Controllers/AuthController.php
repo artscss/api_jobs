@@ -68,11 +68,11 @@ class AuthController extends Controller
         Auth::logout();
         return redirect("/logout")->with("success", "successful logout");
     }
-    // profile
-    public function profile()
+    // edit_profile
+    public function edit_profile()
     {
         $user = User::find(Auth::user()->id);
-        return view("auth.profile", compact("user"));
+        return view("auth.editprofile", compact("user"));
     }
     public function requestprofile(Request $request)
     {
@@ -137,6 +137,11 @@ class AuthController extends Controller
         }
         
         $data->save();
-        return redirect()->route("profile")->with("success", "profile updated successfully");
+        return redirect()->route("edit.profile")->with("success", "profile updated successfully");
+    }
+    public function profile($id)
+    {
+        $user = User::findOrFail($id);
+        return view("auth.profile", compact("user"));
     }
 }

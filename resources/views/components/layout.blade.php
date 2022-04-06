@@ -40,7 +40,8 @@
                           {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <li><a class="dropdown-item" href="{{ route('profile') }}">profile</a></li>
+                          <li><a class="dropdown-item" href="{{ route('auth.profile', Auth::user()->id) }}">show profile</a></li>
+                          <li><a class="dropdown-item" href="{{ route('edit.profile') }}">edit profile</a></li>
                           <li><hr class="dropdown-divider"></li>
                           <li><a class="dropdown-item" href="{{ route('auth.logout') }}">logout</a></li>
                         </ul>

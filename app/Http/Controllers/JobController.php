@@ -2,91 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Interfaces\JobInterface;
 use App\Http\Requests\StoreJobRequest;
 use App\Models\Job;
 use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
+    protected $JobInterface;
+    public function __construct(JobInterface $jobInterface)
+    {
+        $this->JobInterface = $jobInterface;
+    }
     public function index()
     {
-        $jobs = Job::all();
-        return view("job.dashboard", compact("jobs"));
+        return $this->JobInterface->index();
     }
     public function create()
     {
-        return view("job.create");
+        return $this->JobInterface->create();
     }
 
     public function store(StoreJobRequest $request)
     {
-        $data = new Job();
-        $data->name = $request->name;
-        $data->description = $request->description;
-
-        if($request->hasFile("image")){
-            $image = $request->file("image");
-            $extension = $image->getClientOriginalExtension();
-            $image_name = uniqid() . "." . $extension;
-            $image->move(public_path("images/"), $image_name);
-            $data->image = $image_name;
-        }else{
-            $data->image = "job.png";
-        }
-
-        $data->save();
-        return redirect("/dashboard")->with("success", "job created successfully");
+        return $this->JobInterface->store($request);
     }
     public function show($id)
     {
-        $jobs = Job::find($id);
-        return view("job.show", compact("jobs"));
+        return $this->JobInterface->show($id);
     }
 
     public function edit($id)
     {
-        $jobs = Job::find($id);
-        return view("job.edit", compact("jobs"));
+        return $this->JobInterface->edit($id);
     }
 
     public function update(Request $request)
     {
-        $data = Job::find($request->id);
-
-        if(collect($request->name)->isEmpty()) // null
-        {
-            $data->name = $data->name;
-        }else{
-            $data->name = $request->name;
-        }
-        if(collect($request->description)->isEmpty()) // null
-        {
-            $data->description = $data->description;
-        }else{
-            $data->description = $request->description;
-        }
-
-        if($request->hasFile("image")){
-            if($data->image !== "job.png"){
-                unlink(public_path("images/") . $data->image);
-            }
-            $image = $request->file("image");
-            $extension = $image->getClientOriginalExtension();
-            $image_name = uniqid() . "." . $extension;
-            $image->move(public_path("images/"), $image_name);
-            $data->image = $image_name;
-        }
-        
-        $data->save();
-        return redirect("/dashboard")->with("success", "job update successfully");
+        return $this->JobInterface->update($request);
     }
     public function destroy($id)
     {
-        $job = Job::find($id);
-        $job->delete();
-        if($job->image !== "job.png"){
-            unlink(public_path("images/") . $job->image);
-        }
-        return redirect("/dashboard")->with("danger", "job delete successfully");
+        return $this->JobInterface->destroy($id);
     }
 }

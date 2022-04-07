@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginAuthRequest;
+use App\Http\Requests\ProfileAuthRequest;
+use App\Http\Requests\RegisterAuthRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,19 +18,8 @@ class AuthController extends Controller
         return view("auth.register");
     }
     // requestregister
-    public function requestregister(Request $request)
+    public function requestregister(RegisterAuthRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            "name" => ["required", "regex:/^[a-zA-Z]+$/", "min:3", "max:50"],
-            "email" => ["required", "email", "unique:users,email," . Auth::id()],
-            "password" => ["required", "min:5", "max:20"],
-            "password_confirmation" => ["required", "same:password"],
-        ]);
-        if ($validator->fails()) {
-            return redirect()->route("auth.register")
-                        ->withErrors($validator)
-                        ->withInput();
-        }
         $data = new User();
         $data->name = $request->name;
         $data->email = $request->email;
@@ -42,17 +34,8 @@ class AuthController extends Controller
         return view("auth.login");
     }
     // requestlogin
-    public function requestlogin(Request $request)
+    public function requestlogin(LoginAuthRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            "email" => ["required", "email"],
-            "password" => ["required", "min:5", "max:20"],
-        ]);
-        if ($validator->fails()) {
-            return redirect("/login")
-                        ->withErrors($validator)
-                        ->withInput();
-        }
         $data = [
             "email" => $request->email,
             "password" => $request->password,
@@ -74,18 +57,8 @@ class AuthController extends Controller
         $user = User::find(Auth::user()->id);
         return view("auth.editprofile", compact("user"));
     }
-    public function requestprofile(Request $request)
+    public function requestprofile(ProfileAuthRequest $request)
     {
-        $request->validate([
-            "name" => ["string", "min:3", "max:20", "regex:/^[a-zA-Z]+$/"],
-            "email" => ["email", "unique:users,email," . Auth::user()->id],
-            "password" => ["max:80"],
-            "address" => ["nullable", "string", "max:100"],
-            "phone" => ["nullable", "regex:/^(010|011|012|014|015)[0-9]{8}$/"],
-            "age" => ["nullable", "numeric", "min:10", "max:100"],
-            "image" => ["nullable", "image", "mimes:png,jpg"],
-            "cv" => ["nullable", "mimes:pdf", "max:10000"],
-        ]);
         $data = User::find(Auth::user()->id);
         $data->name = $request->name;
         $data->email = $request->email;

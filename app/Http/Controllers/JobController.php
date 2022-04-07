@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreJobRequest;
 use App\Models\Job;
 use Illuminate\Http\Request;
 
@@ -17,14 +18,8 @@ class JobController extends Controller
         return view("job.create");
     }
 
-    public function store(Request $request)
+    public function store(StoreJobRequest $request)
     {
-        $request->validate([
-            "name" => ["required", "string", "min:3", "max:100"],
-            "description" => ["required", "string", "min:5", "max:500"],
-            "image" => ["nullable", "image", "mimes:png,jpg"],
-        ]);
-
         $data = new Job();
         $data->name = $request->name;
         $data->description = $request->description;
